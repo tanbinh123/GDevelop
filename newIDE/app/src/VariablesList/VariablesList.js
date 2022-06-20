@@ -178,9 +178,17 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
   const topLevelVariableNameInputRefs = React.useRef<{
     [number]: SemiControlledAutoCompleteInterface,
   }>({});
-  const [variablePtrToFocus, setVariablePtrToFocus] = React.useState<?number>(
-    null
-  );
+  const topLevelVariableValueInputRefs = React.useRef<{
+    [number]: SemiControlledTextField,
+  }>({});
+  const [
+    variablePtrToFocusName,
+    setVariablePtrToFocusName,
+  ] = React.useState<?number>(null);
+  const [
+    variablePtrToFocusValue,
+    setVariablePtrToFocusValue,
+  ] = React.useState<?number>(null);
   const gdevelopTheme = React.useContext(GDevelopThemeContext);
   const draggedNodeId = React.useRef<?string>(null);
   const forceUpdate = useForceUpdate();
@@ -222,16 +230,30 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
 
   React.useEffect(
     () => {
-      if (variablePtrToFocus) {
+      if (variablePtrToFocusName) {
         const inputRef =
-          topLevelVariableNameInputRefs.current[variablePtrToFocus];
+          topLevelVariableNameInputRefs.current[variablePtrToFocusName];
         if (inputRef) {
           inputRef.focus();
-          setVariablePtrToFocus(null);
+          setVariablePtrToFocusName(null);
         }
       }
     },
-    [variablePtrToFocus]
+    [variablePtrToFocusName]
+  );
+
+  React.useEffect(
+    () => {
+      if (variablePtrToFocusValue) {
+        const inputRef =
+          topLevelVariableValueInputRefs.current[variablePtrToFocusValue];
+        if (inputRef) {
+          inputRef.focus();
+          setVariablePtrToFocusValue(null);
+        }
+      }
+    },
+    [variablePtrToFocusValue]
   );
 
   const shouldHideExpandIcons =
@@ -794,7 +816,7 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
       );
       _saveToHistory();
       setSelectedNodes([newName]);
-      setVariablePtrToFocus(variable.ptr);
+      setVariablePtrToFocusName(variable.ptr);
       return;
     }
 
@@ -819,7 +841,7 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
     );
     _saveToHistory();
     setSelectedNodes([newName]);
-    setVariablePtrToFocus(variable.ptr);
+    setVariablePtrToFocusName(variable.ptr);
   };
 
   const renderVariableAndChildrenRows = (
@@ -1074,6 +1096,13 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
                           ) : (
                             <SemiControlledTextField
                               margin="none"
+                              ref={element => {
+                                if (depth === 0 && element) {
+                                  topLevelVariableValueInputRefs.current[
+                                    variable.ptr
+                                  ] = element;
+                                }
+                              }}
                               type={
                                 type === gd.Variable.Number ? 'number' : 'text'
                               }
@@ -1345,6 +1374,7 @@ const VariablesList = ({ onComputeAllVariableNames, ...props }: Props) => {
       } else {
         setSelectedNodes([...newSelectedNodes, name]);
       }
+      setVariablePtrToFocusValue(variable.ptr)
       newVariable.delete();
     } else {
       const { variable: changedVariable } = getVariableContextFromNodeId(
