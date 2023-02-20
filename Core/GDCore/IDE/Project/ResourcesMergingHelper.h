@@ -64,7 +64,7 @@ class GD_CORE_API ResourcesMergingHelper : public ArbitraryResourceWorker {
    * the Base Directory.
    */
   std::map<gd::String, gd::String>& GetAllResourcesOldAndNewFilename() {
-    return oldFilenames;
+    return newFilenames;
   };
 
   /**
@@ -72,6 +72,14 @@ class GD_CORE_API ResourcesMergingHelper : public ArbitraryResourceWorker {
    * filenames.
    */
   virtual void ExposeFile(gd::String& resource) override;
+  void ExposeImage(gd::String &imageName) override;
+  void ExposeAudio(gd::String &audioName) override;
+  void ExposeFont(gd::String &fontName) override;
+  void ExposeJson(gd::String &jsonName) override;
+  void ExposeTilemap(gd::String &tilemapName) override;
+  void ExposeTileset(gd::String &tilesetName) override;
+  void ExposeVideo(gd::String &videoName) override;
+  void ExposeBitmapFont(gd::String &bitmapFontName) override;
 
  protected:
   void SetNewFilename(gd::String oldFilename, gd::String newFilename);

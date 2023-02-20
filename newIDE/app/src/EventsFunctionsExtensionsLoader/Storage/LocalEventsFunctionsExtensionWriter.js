@@ -117,10 +117,20 @@ export default class LocalEventsFunctionsExtensionWriter {
 
     return Promise.all(
       exportedObjects.map(exportedObject => {
-        const serializedObject = serializeToObjectAsset(
+        const clonedObject = exportedObject.clone().get();
+
+        gd.ProjectResourcesCopier.copyObjectResourcesTo(
           project,
-          exportedObject
+          clonedObject,
+          fileSystem,
+          temporaryOutputDir,
+          // updateOriginalObject
+          true,
+          // preserveDirectoryStructure
+          false
         );
+
+        const serializedObject = serializeToObjectAsset(project, clonedObject);
         return writeJSONFile(
           serializedObject,
           path.join(

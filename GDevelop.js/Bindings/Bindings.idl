@@ -2762,6 +2762,12 @@ interface ProjectResourcesCopier {
                                  boolean updateOriginalProject,
                                  boolean preserveAbsoluteFilenames,
                                  boolean preserveDirectoryStructure);
+    boolean STATIC_CopyObjectResourcesTo([Ref] Project project,
+                                 [Ref] gdObject originalObject,
+                                 [Ref] AbstractFileSystem fs,
+                                 [Const] DOMString destinationDirectory,
+                                 boolean updateOriginalObject,
+                                 boolean preserveDirectoryStructure);
 };
 
 interface ResourcesInUseHelper {
