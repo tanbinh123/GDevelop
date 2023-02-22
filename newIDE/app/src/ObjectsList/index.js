@@ -706,8 +706,7 @@ const ObjectsList = React.forwardRef<Props, ObjectsListInterface>(
               'effect'
             ),
           },
-          eventsFunctionsExtensionWriter &&
-          project.hasEventsBasedObject(object.getType())
+          eventsFunctionsExtensionWriter
             ? {
                 label: i18n._(t`Export object`),
                 click: () => onExportObject && onExportObject(object),

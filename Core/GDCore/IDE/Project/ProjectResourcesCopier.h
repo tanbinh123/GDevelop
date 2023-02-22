@@ -86,6 +86,10 @@ private:
     std::map<gd::String, gd::String>& resourcesNewFileNames,
     AbstractFileSystem& fs,
     gd::String destinationDirectory);
+
+  static void NormalizeResourceNames(
+      gd::Object &object,
+      std::map<gd::String, gd::String> &resourcesNewFileNames);
 };
 
 }  // namespace gd
