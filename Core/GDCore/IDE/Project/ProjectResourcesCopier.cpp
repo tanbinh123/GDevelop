@@ -53,9 +53,8 @@ bool ProjectResourcesCopier::CopyAllResourcesTo(
 }
 
 bool ProjectResourcesCopier::CopyObjectResourcesTo(
-    gd::Project &project, gd::Object &originalObject, AbstractFileSystem &fs,
-    gd::String destinationDirectory, bool updateOriginalObject,
-    bool preserveDirectoryStructure) {
+    gd::Project &project, gd::Object &object, AbstractFileSystem &fs,
+    gd::String destinationDirectory, gd::String objectFullName) {
   auto projectDirectory = fs.DirNameFrom(project.GetProjectFile());
   std::cout << "Copying some resources from " << projectDirectory << " to "
             << destinationDirectory << "..." << std::endl;
@@ -63,21 +62,14 @@ bool ProjectResourcesCopier::CopyObjectResourcesTo(
   // Get the resources to be copied
   gd::ResourcesMergingHelper resourcesMergingHelper(fs);
   resourcesMergingHelper.SetBaseDirectory(projectDirectory);
-  resourcesMergingHelper.PreserveDirectoriesStructure(
-      preserveDirectoryStructure);
+  resourcesMergingHelper.PreserveDirectoriesStructure(false);
   resourcesMergingHelper.PreserveAbsoluteFilenames(false);
 
-  gd::Object *mutableObject;
-  if (updateOriginalObject) {
-    mutableObject = &originalObject;
-  } else {
-    mutableObject = originalObject.Clone().get();
-  }
-  mutableObject->GetConfiguration().ExposeResources(resourcesMergingHelper);
+  object.GetConfiguration().ExposeResources(resourcesMergingHelper);
   auto &resourcesNewFileNames =
       resourcesMergingHelper.GetAllResourcesOldAndNewFilename();
 
-  NormalizeResourceNames(*mutableObject, resourcesNewFileNames);
+  NormalizeResourceNames(object, resourcesNewFileNames, objectFullName);
 
   CopyResourcesTo(resourcesNewFileNames, fs, destinationDirectory);
 
@@ -85,8 +77,8 @@ bool ProjectResourcesCopier::CopyObjectResourcesTo(
 }
 
 void ProjectResourcesCopier::NormalizeResourceNames(
-    gd::Object &object,
-    std::map<gd::String, gd::String> &resourcesNewFileNames) {
+    gd::Object &object, std::map<gd::String, gd::String> &resourcesNewFileNames,
+    const gd::String &objectFullName) {
 
   if (object.GetConfiguration().GetType() == "Sprite") {
     gd::SpriteObject &spriteConfiguration =
@@ -128,7 +120,7 @@ void ProjectResourcesCopier::NormalizeResourceNames(
           continue;
         }
 
-        gd::String newName = object.GetName();
+        gd::String newName = objectFullName;
         if (spriteConfiguration.GetAnimationsCount() > 1) {
           newName += "_" + animationName;
         }
@@ -147,7 +139,6 @@ void ProjectResourcesCopier::NormalizeResourceNames(
 
         frame.SetImageName(newName);
         normalizedFileNames[oldName] = newName;
-        std::cout << oldName << " --> " << newName << std::endl;
       }
     }
     for (map<gd::String, gd::String>::const_iterator it =
@@ -166,7 +157,7 @@ void ProjectResourcesCopier::NormalizeResourceNames(
 void ProjectResourcesCopier::CopyResourcesTo(
     map<gd::String, gd::String>& resourcesNewFileNames,
     AbstractFileSystem& fs,
-    gd::String destinationDirectory) {
+    const gd::String &destinationDirectory) {
   unsigned int i = 0;
   for (map<gd::String, gd::String>::const_iterator it =
            resourcesNewFileNames.begin();

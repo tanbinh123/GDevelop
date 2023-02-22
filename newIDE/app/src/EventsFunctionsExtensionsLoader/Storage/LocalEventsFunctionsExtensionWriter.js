@@ -124,10 +124,7 @@ export default class LocalEventsFunctionsExtensionWriter {
           clonedObject,
           fileSystem,
           temporaryOutputDir,
-          // updateOriginalObject
-          true,
-          // preserveDirectoryStructure
-          false
+          addSpacesToPascalCase(clonedObject.getName())
         );
 
         const serializedObject = serializeToObjectAsset(project, clonedObject);

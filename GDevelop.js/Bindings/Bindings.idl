@@ -2766,8 +2766,7 @@ interface ProjectResourcesCopier {
                                  [Ref] gdObject originalObject,
                                  [Ref] AbstractFileSystem fs,
                                  [Const] DOMString destinationDirectory,
-                                 boolean updateOriginalObject,
-                                 boolean preserveDirectoryStructure);
+                                 [Const] DOMString objectFullName);
 };
 
 interface ResourcesInUseHelper {

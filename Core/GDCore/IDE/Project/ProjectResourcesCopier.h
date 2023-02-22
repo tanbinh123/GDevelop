@@ -54,42 +54,31 @@ class GD_CORE_API ProjectResourcesCopier {
 
   /**
    * \brief Copy all resources files of an object to the specified
-   * `destinationDirectory`.
+   * `destinationDirectory` to prepare asset archive export.
    *
    * \param project The object project
-   * \param project The object to be used
+   * \param object The object to be used
    * \param fs The abstract file system to be used
    * \param destinationDirectory The directory where resources must be copied to
-   * \param updateOriginalObject If set to true, the object will be updated
-   * with the new resources filenames.
-   *
-   * \param preserveAbsoluteFilenames If set to true (default), resources with
-   * absolute filenames won't be changed. Otherwise, resources with absolute
-   * filenames will be copied into the destination directory and their filenames
-   * updated.
-   *
-   * \param preserveDirectoryStructure If set to true (default), the directories
-   * of the resources will be preserved when copying. Otherwise, everything will
-   * be send in the destinationDirectory.
+   * \param objectFullName The name to use in file names of sprite resources
    *
    * \return true if no error happened
    */
-  static bool CopyObjectResourcesTo(gd::Project& project,
-                                       gd::Object& object,
-                                       gd::AbstractFileSystem& fs,
-                                       gd::String destinationDirectory,
-                                       bool updateOriginalObject,
-                                       bool preserveDirectoryStructure = true);
+  static bool CopyObjectResourcesTo(gd::Project &project, gd::Object &object,
+                                    gd::AbstractFileSystem &fs,
+                                    gd::String destinationDirectory,
+                                    gd::String objectFullName);
 
 private:
-  static void CopyResourcesTo(
-    std::map<gd::String, gd::String>& resourcesNewFileNames,
-    AbstractFileSystem& fs,
-    gd::String destinationDirectory);
+  static void
+  CopyResourcesTo(std::map<gd::String, gd::String> &resourcesNewFileNames,
+                  AbstractFileSystem &fs,
+                  const gd::String &destinationDirectory);
 
   static void NormalizeResourceNames(
       gd::Object &object,
-      std::map<gd::String, gd::String> &resourcesNewFileNames);
+      std::map<gd::String, gd::String> &resourcesNewFileNames,
+      const gd::String &objectFullName);
 };
 
 }  // namespace gd
