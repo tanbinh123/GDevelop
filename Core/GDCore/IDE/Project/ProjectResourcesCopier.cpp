@@ -54,7 +54,7 @@ bool ProjectResourcesCopier::CopyAllResourcesTo(
 
 bool ProjectResourcesCopier::CopyObjectResourcesTo(
     gd::Project &project, gd::Object &object, AbstractFileSystem &fs,
-    gd::String destinationDirectory, gd::String objectFullName) {
+    const gd::String &destinationDirectory, const gd::String &objectFullName) {
   auto projectDirectory = fs.DirNameFrom(project.GetProjectFile());
   std::cout << "Copying some resources from " << projectDirectory << " to "
             << destinationDirectory << "..." << std::endl;

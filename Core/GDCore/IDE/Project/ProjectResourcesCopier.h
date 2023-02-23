@@ -66,8 +66,8 @@ class GD_CORE_API ProjectResourcesCopier {
    */
   static bool CopyObjectResourcesTo(gd::Project &project, gd::Object &object,
                                     gd::AbstractFileSystem &fs,
-                                    gd::String destinationDirectory,
-                                    gd::String objectFullName);
+                                    const gd::String &destinationDirectory,
+                                    const gd::String &objectFullName);
 
 private:
   static void
