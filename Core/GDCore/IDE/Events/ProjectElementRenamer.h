@@ -21,7 +21,7 @@ namespace gd {
 
 /**
  * \brief Replace in expressions and in parameters of actions or conditions,
- * references to the name of a behavior of an object by another name.
+ * references to the name of layout or an external layout.
  *
  * \ingroup IDE
  */

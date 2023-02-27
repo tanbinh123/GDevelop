@@ -21,8 +21,7 @@ class EventsList;
 namespace gd {
 
 /**
- * \brief Replace in expressions and in parameters of actions or conditions,
- * references to the name of a behavior of an object by another name.
+ * \brief Replace in link events the name of external events.
  *
  * \ingroup IDE
  */
