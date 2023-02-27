@@ -11,6 +11,8 @@
 #include "GDCore/IDE/DependenciesAnalyzer.h"
 #include "GDCore/IDE/Events/ArbitraryEventsWorker.h"
 #include "GDCore/IDE/Events/EventsBehaviorRenamer.h"
+#include "GDCore/IDE/Events/ProjectElementRenamer.h"
+#include "GDCore/IDE/Events/LinkEventTargetRenamer.h"
 #include "GDCore/IDE/Events/CustomObjectTypeRenamer.h"
 #include "GDCore/IDE/Events/BehaviorTypeRenamer.h"
 #include "GDCore/IDE/Events/EventsRefactorer.h"
@@ -1471,6 +1473,36 @@ void WholeProjectRefactorer::ObjectOrGroupRenamedInLayout(
   }
 }
 
+void WholeProjectRefactorer::RenameLayout(gd::Project &project,
+                                          const gd::String &oldName,
+                                          const gd::String &newName) {
+  gd::ProjectElementRenamer projectElementRenamer(
+      project.GetCurrentPlatform(), "sceneName", oldName, newName);
+  gd::ProjectBrowserHelper::ExposeProjectEvents(project, projectElementRenamer);
+
+  for (gd::String externalLayoutName :
+       GetAssociatedExternalLayouts(project, oldName)) {
+    auto &externalLayout = project.GetExternalLayout(externalLayoutName);
+    externalLayout.SetAssociatedLayout(newName);
+  }
+}
+
+void WholeProjectRefactorer::RenameExternalLayout(gd::Project &project,
+                                                  const gd::String &oldName,
+                                                  const gd::String &newName) {
+  gd::ProjectElementRenamer projectElementRenamer(
+      project.GetCurrentPlatform(), "externalLayoutName", oldName, newName);
+  gd::ProjectBrowserHelper::ExposeProjectEvents(project, projectElementRenamer);
+}
+
+void WholeProjectRefactorer::RenameExternalEvents(gd::Project &project,
+                                                  const gd::String &oldName,
+                                                  const gd::String &newName) {
+  gd::LinkEventTargetRenamer linkEventTargetRenamer(
+      project.GetCurrentPlatform(), oldName, newName);
+  gd::ProjectBrowserHelper::ExposeProjectEvents(project, linkEventTargetRenamer);
+}
+
 void WholeProjectRefactorer::ObjectOrGroupRemovedInEventsBasedObject(
     gd::Project& project,
     gd::EventsBasedObject& eventsBasedObject,
@@ -1606,11 +1638,16 @@ void WholeProjectRefactorer::GlobalObjectOrGroupRemoved(
 
 std::vector<gd::String> WholeProjectRefactorer::GetAssociatedExternalLayouts(
     gd::Project& project, gd::Layout& layout) {
+  return GetAssociatedExternalLayouts(project, layout.GetName());
+}
+
+std::vector<gd::String> WholeProjectRefactorer::GetAssociatedExternalLayouts(
+    gd::Project& project, const gd::String& layoutName) {
   std::vector<gd::String> results;
   for (std::size_t i = 0; i < project.GetExternalLayoutsCount(); ++i) {
     auto& externalLayout = project.GetExternalLayout(i);
 
-    if (externalLayout.GetAssociatedLayout() == layout.GetName()) {
+    if (externalLayout.GetAssociatedLayout() == layoutName) {
       results.push_back(externalLayout.GetName());
     }
   }

@@ -269,6 +269,23 @@ class GD_CORE_API WholeProjectRefactorer {
       const gd::String& newObjectName);
 
   /**
+   * \brief Refactor the project after a layout is renamed.
+   */
+  static void RenameLayout(gd::Project &project, const gd::String &oldName,
+                           const gd::String &newName);
+  /**
+   * \brief Refactor the project after an external layout is renamed.
+   */
+  static void RenameExternalLayout(gd::Project &project,
+                                   const gd::String &oldName,
+                                   const gd::String &newName);
+  /**
+   * \brief Refactor the project after an external layout is renamed.
+   */
+  static void RenameExternalEvents(gd::Project &project,
+                                   const gd::String &oldName,
+                                   const gd::String &newName);
+  /**
    * \brief Refactor the project after an object is renamed in a layout
    *
    * This will update the layout, all external layouts associated with it
@@ -401,6 +418,9 @@ class GD_CORE_API WholeProjectRefactorer {
  private:
   static std::vector<gd::String> GetAssociatedExternalLayouts(
       gd::Project& project, gd::Layout& layout);
+  static std::vector<gd::String>
+  GetAssociatedExternalLayouts(gd::Project &project,
+                               const gd::String &layoutName);
 
   static void DoRenameEventsFunction(gd::Project& project,
                                      const gd::EventsFunction& eventsFunction,

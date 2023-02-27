@@ -13,6 +13,9 @@ declare class gdWholeProjectRefactorer {
   static renameEventsBasedObjectProperty(project: gdProject, eventsFunctionsExtension: gdEventsFunctionsExtension, eventsBasedObject: gdEventsBasedObject, oldName: string, newName: string): void;
   static renameEventsBasedBehavior(project: gdProject, eventsFunctionsExtension: gdEventsFunctionsExtension, oldName: string, newName: string): void;
   static renameEventsBasedObject(project: gdProject, eventsFunctionsExtension: gdEventsFunctionsExtension, oldName: string, newName: string): void;
+  static renameLayout(project: gdProject, oldName: string, newName: string): void;
+  static renameExternalLayout(project: gdProject, oldName: string, newName: string): void;
+  static renameExternalEvents(project: gdProject, oldName: string, newName: string): void;
   static objectOrGroupRenamedInLayout(project: gdProject, layout: gdLayout, oldName: string, newName: string, isObjectGroup: boolean): void;
   static objectOrGroupRemovedInLayout(project: gdProject, layout: gdLayout, objectName: string, isObjectGroup: boolean, removeEventsAndGroups: boolean): void;
   static objectOrGroupRenamedInEventsFunction(project: gdProject, eventsFunction: gdEventsFunction, globalObjectsContainer: gdObjectsContainer, objectsContainer: gdObjectsContainer, oldName: string, newName: string, isObjectGroup: boolean): void;
