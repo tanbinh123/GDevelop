@@ -19,15 +19,8 @@
 
 namespace gd {
 
-bool LinkEventTargetRenamer::DoVisitEvent(gd::BaseEvent &linkEvent) {
-
-  std::cout << "Base event" << std::endl;
-  return false;
-}
-
 bool LinkEventTargetRenamer::DoVisitLinkEvent(gd::LinkEvent &linkEvent) {
 
-  std::cout << "Link: " << linkEvent.GetTarget() << std::endl;
   if (linkEvent.GetTarget() == oldName) {
     linkEvent.SetTarget(newName);
   }

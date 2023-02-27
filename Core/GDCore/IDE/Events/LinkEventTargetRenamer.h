@@ -35,7 +35,6 @@ public:
   virtual ~LinkEventTargetRenamer();
 
 private:
-  bool DoVisitEvent(gd::BaseEvent &linkEvent) override;
   bool DoVisitLinkEvent(gd::LinkEvent &linkEvent) override;
 
   const gd::Platform &platform;
