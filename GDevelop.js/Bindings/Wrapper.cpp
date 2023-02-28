@@ -649,6 +649,7 @@ typedef ExtensionAndMetadata<ExpressionMetadata> ExtensionAndExpressionMetadata;
 #define STATIC_RenameLayout RenameLayout
 #define STATIC_RenameExternalLayout RenameExternalLayout
 #define STATIC_RenameExternalEvents RenameExternalEvents
+#define STATIC_RenameLayer RenameLayer
 
 #define STATIC_GetBehaviorPropertyGetterName GetBehaviorPropertyGetterName
 #define STATIC_GetBehaviorPropertySetterName GetBehaviorPropertySetterName
