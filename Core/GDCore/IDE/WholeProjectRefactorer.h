@@ -421,6 +421,9 @@ class GD_CORE_API WholeProjectRefactorer {
   static std::vector<gd::String>
   GetAssociatedExternalLayouts(gd::Project &project,
                                const gd::String &layoutName);
+  static std::vector<gd::String>
+  GetAssociatedExternalEvents(gd::Project &project,
+                               const gd::String &layoutName);
 
   static void DoRenameEventsFunction(gd::Project& project,
                                      const gd::EventsFunction& eventsFunction,

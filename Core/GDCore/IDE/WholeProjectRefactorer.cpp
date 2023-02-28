@@ -1485,6 +1485,11 @@ void WholeProjectRefactorer::RenameLayout(gd::Project &project,
     auto &externalLayout = project.GetExternalLayout(externalLayoutName);
     externalLayout.SetAssociatedLayout(newName);
   }
+  for (gd::String externalEventsName :
+       GetAssociatedExternalEvents(project, oldName)) {
+    auto &externalEvents = project.GetExternalEvents(externalEventsName);
+    externalEvents.SetAssociatedLayout(newName);
+  }
 }
 
 void WholeProjectRefactorer::RenameExternalLayout(gd::Project &project,
@@ -1649,6 +1654,20 @@ std::vector<gd::String> WholeProjectRefactorer::GetAssociatedExternalLayouts(
 
     if (externalLayout.GetAssociatedLayout() == layoutName) {
       results.push_back(externalLayout.GetName());
+    }
+  }
+
+  return results;
+}
+
+std::vector<gd::String> WholeProjectRefactorer::GetAssociatedExternalEvents(
+    gd::Project &project, const gd::String &layoutName) {
+  std::vector<gd::String> results;
+  for (std::size_t i = 0; i < project.GetExternalEventsCount(); ++i) {
+    auto &externalEvents = project.GetExternalEvents(i);
+
+    if (externalEvents.GetAssociatedLayout() == layoutName) {
+      results.push_back(externalEvents.GetName());
     }
   }
 

@@ -3060,3 +3060,96 @@ TEST_CASE("WholeProjectRefactorer (FindDependentBehaviorNames failing cases)",
     }
   }
 }
+
+TEST_CASE("RenameExternalEvents", "[common]") {
+  SECTION("Can update event link targets") {
+    gd::Project project;
+    gd::Platform platform;
+    project.AddPlatform(platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    auto &externalLayout =
+        project.InsertNewExternalLayout("My external layout", 0);
+    externalLayout.SetAssociatedLayout("My layout");
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+
+    auto &events = layout.GetEvents();
+    gd::LinkEvent event;
+    event.SetTarget("My external events");
+    gd::LinkEvent &linkEvent =
+        dynamic_cast<gd::LinkEvent &>(events.InsertEvent(event));
+
+    gd::WholeProjectRefactorer::RenameExternalEvents(
+        project, "My external events", "My renamed external events");
+
+    REQUIRE(linkEvent.GetTarget() == "My renamed external events");
+  }
+}
+
+TEST_CASE("RenameExternalLayout", "[common]") {
+  SECTION("Can update external layout names in parameters") {
+    gd::Project project;
+    gd::Platform platform;
+    SetupProjectWithDummyPlatform(project, platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    auto &externalLayout =
+        project.InsertNewExternalLayout("My external layout", 0);
+    externalLayout.SetAssociatedLayout("My layout");
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+
+    auto &events = layout.GetEvents();
+    gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+        events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+    gd::Instruction action;
+    action.SetType("MyExtension::CreateObjectsFromExternalLayout");
+    action.SetParametersCount(2);
+    action.SetParameter(1, gd::Expression("\"My external layout\""));
+    event.GetActions().Insert(action);
+
+    gd::WholeProjectRefactorer::RenameExternalLayout(
+        project, "My external layout", "My renamed external layout");
+
+    REQUIRE(event.GetActions().at(0).GetParameter(1).GetPlainString() ==
+            "\"My renamed external layout\"");
+  }
+}
+
+TEST_CASE("RenameLayout", "[common]") {
+  SECTION("Can update layout names in parameters and external targets") {
+    gd::Project project;
+    gd::Platform platform;
+    SetupProjectWithDummyPlatform(project, platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    auto &externalLayout =
+        project.InsertNewExternalLayout("My external layout", 0);
+    externalLayout.SetAssociatedLayout("My layout");
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+
+    auto &events = layout.GetEvents();
+    gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+        events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+    gd::Instruction action;
+    action.SetType("MyExtension::Scene");
+    action.SetParametersCount(2);
+    action.SetParameter(1, gd::Expression("\"My layout\""));
+    event.GetActions().Insert(action);
+
+    gd::WholeProjectRefactorer::RenameLayout(project, "My layout",
+                                             "My renamed layout");
+
+    REQUIRE(event.GetActions().at(0).GetParameter(1).GetPlainString() ==
+            "\"My renamed layout\"");
+    REQUIRE(externalLayout.GetAssociatedLayout() == "My renamed layout");
+    REQUIRE(externalEvents.GetAssociatedLayout() == "My renamed layout");
+  }
+}

@@ -381,6 +381,33 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
                        .AddUnsupportedBaseObjectCapability("effect");
   }
 
+  {
+    extension
+        ->AddAction("CreateObjectsFromExternalLayout",
+                    _("Create objects from an external layout"),
+                    _("Create objects from an external layout."),
+                    _("Create objects from the external layout named _PARAM1_"),
+                    "", "res/ribbon_default/externallayout32.png",
+                    "res/ribbon_default/externallayout32.png")
+        .AddCodeOnlyParameter("currentScene", "")
+        .AddParameter("externalLayoutName", _("Name of the external layout"))
+        .AddParameter("expression", _("X position of the origin"), "", true)
+        .SetDefaultValue("0")
+        .AddParameter("expression", _("Y position of the origin"), "", true)
+        .SetDefaultValue("0");
+
+    extension
+        ->AddAction("Scene", _("Change the scene"),
+                    _("Stop this scene and start the specified one instead."),
+                    _("Change to scene _PARAM1_"), "",
+                    "res/actions/replaceScene24.png",
+                    "res/actions/replaceScene.png")
+        .AddCodeOnlyParameter("currentScene", "")
+        .AddParameter("sceneName", _("Name of the new scene"))
+        .AddParameter("yesorno", _("Stop any other paused scenes?"))
+        .SetDefaultValue("true");
+  }
+
   platform.AddExtension(commonInstructionsExtension);
   platform.AddExtension(baseObjectExtension);
   platform.AddExtension(extension);
