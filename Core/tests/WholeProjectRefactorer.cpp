@@ -3062,7 +3062,7 @@ TEST_CASE("WholeProjectRefactorer (FindDependentBehaviorNames failing cases)",
 }
 
 TEST_CASE("RenameExternalEvents", "[common]") {
-  SECTION("Can update event link targets") {
+  SECTION("Can update an event link to external events") {
     gd::Project project;
     gd::Platform platform;
     project.AddPlatform(platform);
@@ -3135,20 +3135,26 @@ TEST_CASE("RenameLayout", "[common]") {
     externalEvents.SetAssociatedLayout("My layout");
 
     auto &events = layout.GetEvents();
-    gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+    gd::StandardEvent &event0 = dynamic_cast<gd::StandardEvent &>(
         events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
 
     gd::Instruction action;
     action.SetType("MyExtension::Scene");
     action.SetParametersCount(2);
     action.SetParameter(1, gd::Expression("\"My layout\""));
-    event.GetActions().Insert(action);
+    event0.GetActions().Insert(action);
+
+    gd::LinkEvent event1;
+    event1.SetTarget("My layout");
+    gd::LinkEvent &linkEvent =
+        dynamic_cast<gd::LinkEvent &>(events.InsertEvent(event1));
 
     gd::WholeProjectRefactorer::RenameLayout(project, "My layout",
                                              "My renamed layout");
 
-    REQUIRE(event.GetActions().at(0).GetParameter(1).GetPlainString() ==
+    REQUIRE(event0.GetActions().at(0).GetParameter(1).GetPlainString() ==
             "\"My renamed layout\"");
+    REQUIRE(linkEvent.GetTarget() == "My renamed layout");
     REQUIRE(externalLayout.GetAssociatedLayout() == "My renamed layout");
     REQUIRE(externalEvents.GetAssociatedLayout() == "My renamed layout");
   }

@@ -1490,6 +1490,10 @@ void WholeProjectRefactorer::RenameLayout(gd::Project &project,
     auto &externalEvents = project.GetExternalEvents(externalEventsName);
     externalEvents.SetAssociatedLayout(newName);
   }
+  
+  gd::LinkEventTargetRenamer linkEventTargetRenamer(
+      project.GetCurrentPlatform(), oldName, newName);
+  gd::ProjectBrowserHelper::ExposeProjectEvents(project, linkEventTargetRenamer);
 }
 
 void WholeProjectRefactorer::RenameExternalLayout(gd::Project &project,
