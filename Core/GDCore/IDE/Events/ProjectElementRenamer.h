@@ -40,9 +40,9 @@ private:
                           bool isCondition) override;
 
   const gd::Platform &platform;
-  gd::String parameterType;
-  gd::String oldName;
-  gd::String newName;
+  const gd::String parameterType;
+  const gd::String oldName;
+  const gd::String newName;
 };
 
 } // namespace gd

@@ -13,6 +13,8 @@
 #include "GDCore/Project/Project.h"
 #include "GDCore/Tools/Localization.h"
 #include "GDCore/Events/Builtin/StandardEvent.h"
+#include "GDCore/Extensions/Metadata/MultipleInstructionMetadata.h"
+#include "GDCore/Extensions/Metadata/ParameterOptions.h"
 #include "catch.hpp"
 
 // TODO Remove these 2 classes and write the test with events based behaviors.
@@ -406,6 +408,20 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
         .AddParameter("sceneName", _("Name of the new scene"))
         .AddParameter("yesorno", _("Stop any other paused scenes?"))
         .SetDefaultValue("true");
+
+  extension
+      ->AddExpressionAndConditionAndAction(
+          "number",
+          "CameraCenterX",
+          _("Camera center X position"),
+          _("the X position of the center of a camera"),
+          _("the X position of camera _PARAM4_ (layer: _PARAM3_)"),
+          "",
+          "res/conditions/camera24.png")
+      .AddCodeOnlyParameter("currentScene", "")
+      .UseStandardParameters("number", gd::ParameterOptions::MakeNewOptions())
+      .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
+      .SetDefaultValue("\"\"");
   }
 
   platform.AddExtension(commonInstructionsExtension);

@@ -3159,3 +3159,95 @@ TEST_CASE("RenameLayout", "[common]") {
     REQUIRE(externalEvents.GetAssociatedLayout() == "My renamed layout");
   }
 }
+
+namespace {
+const gd::Instruction &CreateActionWithLayerParameter(gd::Project &project,
+                                                      gd::EventsList &events) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::SetCameraCenterX");
+  action.SetParametersCount(4);
+  action.SetParameter(3, gd::Expression("\"My layer\""));
+  return event.GetActions().Insert(action);
+}
+
+const gd::Instruction &
+CreateExpressionWithLayerParameter(gd::Project &project,
+                                   gd::EventsList &events) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::DoSomething");
+  action.SetParametersCount(1);
+  action.SetParameter(
+      0, gd::Expression("MyExtension::CameraCenterX(\"My layer\") + "
+                        "MyExtension::CameraCenterX(\"My layer\")"));
+  return event.GetActions().Insert(action);
+}
+} // namespace
+
+TEST_CASE("RenameLayer", "[common]") {
+  SECTION("Can update an event link to external events") {
+    gd::Project project;
+    gd::Platform platform;
+    SetupProjectWithDummyPlatform(project, platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    auto &otherLayout = project.InsertNewLayout("My other layout", 1);
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+    auto &otherExternalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    otherExternalEvents.SetAssociatedLayout("My other layout");
+
+    auto &layoutAction =
+        CreateActionWithLayerParameter(project, layout.GetEvents());
+    auto &externalAction =
+        CreateActionWithLayerParameter(project, externalEvents.GetEvents());
+    auto &otherLayoutAction =
+        CreateActionWithLayerParameter(project, otherLayout.GetEvents());
+    auto &otherExternalAction = CreateActionWithLayerParameter(
+        project, otherExternalEvents.GetEvents());
+
+    auto &layoutExpression =
+        CreateExpressionWithLayerParameter(project, layout.GetEvents());
+    auto &externalExpression =
+        CreateExpressionWithLayerParameter(project, externalEvents.GetEvents());
+    auto &otherLayoutExpression =
+        CreateExpressionWithLayerParameter(project, otherLayout.GetEvents());
+    auto &otherExternalExpression = CreateExpressionWithLayerParameter(
+        project, otherExternalEvents.GetEvents());
+
+    std::cout << "RenameLayer" << std::endl;
+    gd::WholeProjectRefactorer::RenameLayer(project, layout, "My layer",
+                                            "My renamed layer");
+
+    REQUIRE(layoutAction.GetParameter(3).GetPlainString() ==
+            "\"My renamed layer\"");
+    REQUIRE(externalAction.GetParameter(3).GetPlainString() ==
+            "\"My renamed layer\"");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutAction.GetParameter(3).GetPlainString() ==
+            "\"My layer\"");
+    REQUIRE(otherExternalAction.GetParameter(3).GetPlainString() ==
+            "\"My layer\"");
+
+    REQUIRE(layoutExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::CameraCenterX(\"My renamed layer\") + "
+            "MyExtension::CameraCenterX(\"My renamed layer\")");
+    REQUIRE(externalExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::CameraCenterX(\"My renamed layer\") + "
+            "MyExtension::CameraCenterX(\"My renamed layer\")");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::CameraCenterX(\"My layer\") + "
+            "MyExtension::CameraCenterX(\"My layer\")");
+    REQUIRE(otherExternalExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::CameraCenterX(\"My layer\") + "
+            "MyExtension::CameraCenterX(\"My layer\")");
+  }
+}

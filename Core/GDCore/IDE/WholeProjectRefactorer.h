@@ -286,6 +286,11 @@ class GD_CORE_API WholeProjectRefactorer {
                                    const gd::String &oldName,
                                    const gd::String &newName);
   /**
+   * \brief Refactor the project after a layer is renamed.
+   */
+  static void RenameLayer(gd::Project &project, gd::Layout &layout,
+                          const gd::String &oldName, const gd::String &newName);
+  /**
    * \brief Refactor the project after an object is renamed in a layout
    *
    * This will update the layout, all external layouts associated with it
