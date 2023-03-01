@@ -33,6 +33,12 @@ public:
                         const gd::String &oldName_, const gd::String &newName_)
       : platform(platform_), parameterType(parameterType_), oldName(oldName_),
         newName(newName_){};
+  ProjectElementRenamer(const gd::Platform &platform_,
+                        const gd::String &parameterType_,
+                        const gd::String &objectName_,
+                        const gd::String &oldName_, const gd::String &newName_)
+      : platform(platform_), parameterType(parameterType_),
+        objectName(objectName_), oldName(oldName_), newName(newName_){};
   virtual ~ProjectElementRenamer();
 
 private:
@@ -41,6 +47,9 @@ private:
 
   const gd::Platform &platform;
   const gd::String parameterType;
+  /// If not empty, parameters will be taken into account only if related to
+  /// this object.
+  const gd::String objectName;
   const gd::String oldName;
   const gd::String newName;
 };

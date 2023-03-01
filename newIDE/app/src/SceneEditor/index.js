@@ -1618,6 +1618,7 @@ export default class SceneEditor extends React.Component<Props, State> {
                   object={this.state.editedObjectWithContext.object}
                   initialTab={this.state.editedObjectInitialTab}
                   project={project}
+                  layout={layout}
                   resourceManagementProps={resourceManagementProps}
                   onComputeAllVariableNames={() => {
                     const { editedObjectWithContext } = this.state;

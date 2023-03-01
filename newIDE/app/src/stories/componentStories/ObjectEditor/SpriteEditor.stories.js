@@ -29,6 +29,7 @@ export const Default = () => (
       <SpriteEditor
         objectConfiguration={testProject.spriteObjectConfiguration}
         project={testProject.project}
+        layout={testProject.testLayout}
         resourceManagementProps={{
           getStorageProvider: () => emptyStorageProvider,
           onFetchNewlyAddedResources: async () => {},
@@ -37,6 +38,7 @@ export const Default = () => (
           resourceExternalEditors: fakeResourceExternalEditors,
         }}
         onSizeUpdated={() => {}}
+        object={testProject.spriteObject}
         objectName="FakeObjectName"
       />
     </DragAndDropContextProvider>
@@ -50,6 +52,7 @@ export const AnimationLocked = () => (
         isAnimationListLocked
         objectConfiguration={testProject.spriteObjectConfiguration}
         project={testProject.project}
+        layout={testProject.testLayout}
         resourceManagementProps={{
           getStorageProvider: () => emptyStorageProvider,
           onFetchNewlyAddedResources: async () => {},
@@ -58,6 +61,7 @@ export const AnimationLocked = () => (
           resourceExternalEditors: fakeResourceExternalEditors,
         }}
         onSizeUpdated={() => {}}
+        object={testProject.spriteObject}
         objectName="FakeObjectName"
       />
     </DragAndDropContextProvider>

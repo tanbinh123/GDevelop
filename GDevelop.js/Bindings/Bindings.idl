@@ -2264,6 +2264,12 @@ interface WholeProjectRefactorer {
       [Ref] Layout layout,
       [Const] DOMString oldName,
       [Const] DOMString newName);
+    void STATIC_RenameAnimation(
+      [Ref] Project project,
+      [Ref] Layout layout,
+      [Ref] gdObject gdObject,
+      [Const] DOMString oldName,
+      [Const] DOMString newName);
     void STATIC_ObjectOrGroupRenamedInLayout([Ref] Project project, [Ref] Layout layout, [Const] DOMString oldName, [Const] DOMString newName, boolean isObjectGroup);
     void STATIC_ObjectOrGroupRemovedInLayout([Ref] Project project, [Ref] Layout layout, [Const] DOMString objectName, boolean isObjectGroup, boolean removeEventsAndGroups);
     void STATIC_ObjectOrGroupRenamedInEventsFunction([Ref] Project project, [Ref] EventsFunction eventsFunction, [Ref] ObjectsContainer globalObjectsContainer, [Ref] ObjectsContainer objectsContainer, [Const] DOMString oldName, [Const] DOMString newName, boolean isObjectGroup);

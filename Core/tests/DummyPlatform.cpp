@@ -283,6 +283,20 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
       .AddParameter("objectPtr", _("Object parameter"))
       .SetFunctionName("getObjectStringWith2ObjectParam");
 
+  object
+      .AddAction("SetAnimationName", _("Change the animation (by name)"),
+                 _("Change the animation of the object, using the name of the "
+                   "animation."),
+                 _("Set animation of _PARAM0_ to _PARAM1_"),
+                 _("Animations and images"), "", "")
+      .AddParameter("object", _("Object"), "Sprite")
+      .AddParameter("objectAnimationName", _("Animation name"));
+  object
+      .AddExpression("AnimationFrameCount", _("Animation frame count"),
+                 _("Return the number of frame in the animation."),
+                 _("Animations and images"), "")
+      .AddParameter("object", _("Object"), "Sprite")
+      .AddParameter("objectAnimationName", _("Animation name"));
   {
     auto& behavior =
         extension->AddBehavior("MyBehavior",
@@ -389,8 +403,7 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
                     _("Create objects from an external layout"),
                     _("Create objects from an external layout."),
                     _("Create objects from the external layout named _PARAM1_"),
-                    "", "res/ribbon_default/externallayout32.png",
-                    "res/ribbon_default/externallayout32.png")
+                    "", "", "")
         .AddCodeOnlyParameter("currentScene", "")
         .AddParameter("externalLayoutName", _("Name of the external layout"))
         .AddParameter("expression", _("X position of the origin"), "", true)
@@ -401,27 +414,21 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
     extension
         ->AddAction("Scene", _("Change the scene"),
                     _("Stop this scene and start the specified one instead."),
-                    _("Change to scene _PARAM1_"), "",
-                    "res/actions/replaceScene24.png",
-                    "res/actions/replaceScene.png")
+                    _("Change to scene _PARAM1_"), "", "", "")
         .AddCodeOnlyParameter("currentScene", "")
         .AddParameter("sceneName", _("Name of the new scene"))
         .AddParameter("yesorno", _("Stop any other paused scenes?"))
         .SetDefaultValue("true");
 
-  extension
-      ->AddExpressionAndConditionAndAction(
-          "number",
-          "CameraCenterX",
-          _("Camera center X position"),
-          _("the X position of the center of a camera"),
-          _("the X position of camera _PARAM4_ (layer: _PARAM3_)"),
-          "",
-          "res/conditions/camera24.png")
-      .AddCodeOnlyParameter("currentScene", "")
-      .UseStandardParameters("number", gd::ParameterOptions::MakeNewOptions())
-      .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
-      .SetDefaultValue("\"\"");
+    extension
+        ->AddExpressionAndConditionAndAction(
+            "number", "CameraCenterX", _("Camera center X position"),
+            _("the X position of the center of a camera"),
+            _("the X position of camera _PARAM4_ (layer: _PARAM3_)"), "", "")
+        .AddCodeOnlyParameter("currentScene", "")
+        .UseStandardParameters("number", gd::ParameterOptions::MakeNewOptions())
+        .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
+        .SetDefaultValue("\"\"");
   }
 
   platform.AddExtension(commonInstructionsExtension);

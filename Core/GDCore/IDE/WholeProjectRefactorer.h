@@ -290,6 +290,14 @@ class GD_CORE_API WholeProjectRefactorer {
    */
   static void RenameLayer(gd::Project &project, gd::Layout &layout,
                           const gd::String &oldName, const gd::String &newName);
+
+  /**
+   * \brief Refactor the project after an object animation is renamed.
+   */
+  static void RenameAnimation(gd::Project &project, gd::Layout &layout,
+                              gd::Object &object, const gd::String &oldName,
+                              const gd::String &newName);
+
   /**
    * \brief Refactor the project after an object is renamed in a layout
    *

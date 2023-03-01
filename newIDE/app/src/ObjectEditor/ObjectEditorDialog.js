@@ -45,6 +45,7 @@ type Props = {|
 
   // Passed down to object editors:
   project: gdProject,
+  layout?: gdLayout,
   onComputeAllVariableNames: () => Array<string>,
   resourceManagementProps: ResourceManagementProps,
   unsavedChanges?: UnsavedChanges,
@@ -231,6 +232,8 @@ const InnerDialog = (props: InnerDialogProps) => {
           <EditorComponent
             objectConfiguration={props.object.getConfiguration()}
             project={props.project}
+            layout={props.layout}
+            object={props.object}
             resourceManagementProps={props.resourceManagementProps}
             onSizeUpdated={
               forceUpdate /*Force update to ensure dialog is properly positioned*/

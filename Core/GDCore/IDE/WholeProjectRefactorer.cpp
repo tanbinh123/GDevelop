@@ -1521,6 +1521,18 @@ void WholeProjectRefactorer::RenameLayer(gd::Project &project,
   gd::ProjectBrowserHelper::ExposeLayoutEvents(project, layout, projectElementRenamer);
 }
 
+void WholeProjectRefactorer::RenameAnimation(gd::Project &project,
+                                             gd::Layout &layout,
+                                             gd::Object &object,
+                                             const gd::String &oldName,
+                                             const gd::String &newName) {
+  gd::ProjectElementRenamer projectElementRenamer(
+      project.GetCurrentPlatform(), "objectAnimationName", object.GetName(),
+      oldName, newName);
+  gd::ProjectBrowserHelper::ExposeLayoutEvents(project, layout,
+                                               projectElementRenamer);
+}
+
 void WholeProjectRefactorer::ObjectOrGroupRemovedInEventsBasedObject(
     gd::Project& project,
     gd::EventsBasedObject& eventsBasedObject,

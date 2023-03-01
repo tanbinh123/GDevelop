@@ -36,12 +36,13 @@ public:
       const gd::ObjectsContainer &globalObjectsContainer_,
       const gd::ObjectsContainer &objectsContainer_,
       const gd::String &expressionPlainString_,
-      const gd::String &parameterType_, const gd::String &oldName_,
-      const gd::String &newName_)
+      const gd::String &parameterType_, const gd::String &objectName_,
+      const gd::String &oldName_)
       : platform(platform_), globalObjectsContainer(globalObjectsContainer_),
         objectsContainer(objectsContainer_),
         expressionPlainString(expressionPlainString_),
-        parameterType(parameterType_), oldName(oldName_), newName(newName_){};
+        parameterType(parameterType_), objectName(objectName_),
+        oldName(oldName_){};
   virtual ~ExpressionIdentifierStringFinder(){};
 
   const std::vector<gd::ExpressionParserLocation> GetOccurrences() const {
@@ -78,6 +79,7 @@ protected:
   void OnVisitIdentifierNode(IdentifierNode &node) override {}
   void OnVisitObjectFunctionNameNode(ObjectFunctionNameNode &node) override {}
   void OnVisitFunctionCallNode(FunctionCallNode &node) override {
+    bool considerFunction = objectName.empty() || node.objectName == objectName;
 
     const bool isObjectFunction = !node.objectName.empty();
     const gd::ExpressionMetadata &metadata =
@@ -111,7 +113,8 @@ protected:
             parameterNode->location.GetStartPosition(),
             parameterNode->location.GetEndPosition() -
                 parameterNode->location.GetStartPosition());
-        if (parameterExpressionPlainSting == "\"" + oldName + "\"") {
+        if (considerFunction &&
+            parameterExpressionPlainSting == "\"" + oldName + "\"") {
           occurrences.push_back(parameterNode->location);
         } else {
           parameterNode->Visit(*this);
@@ -127,8 +130,10 @@ private:
   const gd::ObjectsContainer &objectsContainer;
   const gd::String &expressionPlainString;
   const gd::String &oldName;
-  const gd::String &newName;
   const gd::String parameterType;
+  /// If not empty, parameters will be taken into account only if related to
+  /// this object.
+  const gd::String objectName;
   std::vector<gd::ExpressionParserLocation> occurrences;
 };
 
@@ -145,7 +150,9 @@ bool ProjectElementRenamer::DoVisitInstruction(gd::Instruction &instruction,
       [&](const gd::ParameterMetadata &parameterMetadata,
           const gd::Expression &parameterValue, size_t parameterIndex,
           const gd::String &lastObjectName) {
-        if (parameterMetadata.GetType() == parameterType) {
+
+        if (parameterMetadata.GetType() == parameterType &&
+            (objectName.empty() || lastObjectName == objectName)) {
           if (parameterValue.GetPlainString() == "\"" + oldName + "\"") {
             instruction.SetParameter(parameterIndex,
                                      gd::Expression("\"" + newName + "\""));
@@ -155,7 +162,8 @@ bool ProjectElementRenamer::DoVisitInstruction(gd::Instruction &instruction,
         if (node) {
           ExpressionIdentifierStringFinder finder(
               platform, GetGlobalObjectsContainer(), GetObjectsContainer(),
-              parameterValue.GetPlainString(), parameterType, oldName, newName);
+              parameterValue.GetPlainString(), parameterType, objectName,
+              oldName);
           node->Visit(finder);
 
           if (finder.GetOccurrences().size() > 0) {

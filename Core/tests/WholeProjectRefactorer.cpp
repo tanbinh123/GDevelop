@@ -3190,7 +3190,7 @@ CreateExpressionWithLayerParameter(gd::Project &project,
 } // namespace
 
 TEST_CASE("RenameLayer", "[common]") {
-  SECTION("Can update an event link to external events") {
+  SECTION("Can update layout names in events") {
     gd::Project project;
     gd::Platform platform;
     SetupProjectWithDummyPlatform(project, platform);
@@ -3222,7 +3222,6 @@ TEST_CASE("RenameLayer", "[common]") {
     auto &otherExternalExpression = CreateExpressionWithLayerParameter(
         project, otherExternalEvents.GetEvents());
 
-    std::cout << "RenameLayer" << std::endl;
     gd::WholeProjectRefactorer::RenameLayer(project, layout, "My layer",
                                             "My renamed layer");
 
@@ -3249,5 +3248,112 @@ TEST_CASE("RenameLayer", "[common]") {
     REQUIRE(otherExternalExpression.GetParameter(0).GetPlainString() ==
             "MyExtension::CameraCenterX(\"My layer\") + "
             "MyExtension::CameraCenterX(\"My layer\")");
+  }
+}
+
+namespace {
+const gd::Instruction &CreateActionWithAnimationParameter(gd::Project &project,
+                                                      gd::EventsList &events,
+                                                      const gd::String &objectName) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::SetAnimationName");
+  action.SetParametersCount(2);
+  action.SetParameter(0, objectName);
+  action.SetParameter(1, gd::Expression("\"My animation\""));
+  return event.GetActions().Insert(action);
+}
+
+const gd::Instruction &
+CreateExpressionWithAnimationParameter(gd::Project &project,
+                                   gd::EventsList &events,
+                                   const gd::String &objectName) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::DoSomething");
+  action.SetParametersCount(1);
+  action.SetParameter(
+      0, gd::Expression(objectName + ".AnimationFrameCount(\"My animation\") + " +
+                        objectName + ".AnimationFrameCount(\"My animation\")"));
+  return event.GetActions().Insert(action);
+}
+} // namespace
+
+TEST_CASE("RenameAnimation", "[common]") {
+  SECTION("Can update object animation names in event") {
+    gd::Project project;
+    gd::Platform platform;
+    SetupProjectWithDummyPlatform(project, platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    auto &otherLayout = project.InsertNewLayout("My other layout", 1);
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+    auto &otherExternalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    otherExternalEvents.SetAssociatedLayout("My other layout");
+    auto &object = layout.InsertNewObject(project, "MyExtension::Sprite", "MySprite", 0);
+    layout.InsertNewObject(project, "MyExtension::Sprite", "MySprite2", 1);
+    otherLayout.InsertNewObject(project, "MyExtension::Sprite", "MySprite", 0);
+
+    auto &layoutAction =
+        CreateActionWithAnimationParameter(project, layout.GetEvents(), "MySprite");
+    auto &externalAction =
+        CreateActionWithAnimationParameter(project, externalEvents.GetEvents(), "MySprite");
+    auto &otherLayoutAction =
+        CreateActionWithAnimationParameter(project, otherLayout.GetEvents(), "MySprite");
+    auto &otherExternalAction = CreateActionWithAnimationParameter(
+        project, otherExternalEvents.GetEvents(), "MySprite");
+    auto &wrongObjectAction =
+        CreateActionWithAnimationParameter(project, layout.GetEvents(), "MySprite2");
+
+    auto &layoutExpression =
+        CreateExpressionWithAnimationParameter(project, layout.GetEvents(), "MySprite");
+    auto &externalExpression =
+        CreateExpressionWithAnimationParameter(project, externalEvents.GetEvents(), "MySprite");
+    auto &otherLayoutExpression =
+        CreateExpressionWithAnimationParameter(project, otherLayout.GetEvents(), "MySprite");
+    auto &otherExternalExpression = CreateExpressionWithAnimationParameter(
+        project, otherExternalEvents.GetEvents(), "MySprite");
+    auto &wrongObjectExpression =
+        CreateExpressionWithAnimationParameter(project, layout.GetEvents(), "MySprite2");
+
+    std::cout << "RenameAnimation" << std::endl;
+    gd::WholeProjectRefactorer::RenameAnimation(project, layout, object, "My animation",
+                                            "My renamed animation");
+
+    REQUIRE(layoutAction.GetParameter(1).GetPlainString() ==
+            "\"My renamed animation\"");
+    REQUIRE(externalAction.GetParameter(1).GetPlainString() ==
+            "\"My renamed animation\"");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutAction.GetParameter(1).GetPlainString() ==
+            "\"My animation\"");
+    REQUIRE(otherExternalAction.GetParameter(1).GetPlainString() ==
+            "\"My animation\"");
+    REQUIRE(wrongObjectAction.GetParameter(1).GetPlainString() ==
+            "\"My animation\"");
+
+    REQUIRE(layoutExpression.GetParameter(0).GetPlainString() ==
+            "MySprite.AnimationFrameCount(\"My renamed animation\") + "
+            "MySprite.AnimationFrameCount(\"My renamed animation\")");
+    REQUIRE(externalExpression.GetParameter(0).GetPlainString() ==
+            "MySprite.AnimationFrameCount(\"My renamed animation\") + "
+            "MySprite.AnimationFrameCount(\"My renamed animation\")");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutExpression.GetParameter(0).GetPlainString() ==
+            "MySprite.AnimationFrameCount(\"My animation\") + "
+            "MySprite.AnimationFrameCount(\"My animation\")");
+    REQUIRE(otherExternalExpression.GetParameter(0).GetPlainString() ==
+            "MySprite.AnimationFrameCount(\"My animation\") + "
+            "MySprite.AnimationFrameCount(\"My animation\")");
+    REQUIRE(wrongObjectExpression.GetParameter(0).GetPlainString() ==
+            "MySprite2.AnimationFrameCount(\"My animation\") + "
+            "MySprite2.AnimationFrameCount(\"My animation\")");
   }
 }
