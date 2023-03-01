@@ -36,13 +36,13 @@ public:
       const gd::ObjectsContainer &globalObjectsContainer_,
       const gd::ObjectsContainer &objectsContainer_,
       const gd::String &expressionPlainString_,
-      const gd::String &parameterType_, const gd::String &objectName_, const gd::String &layerName_,
-      const gd::String &oldName_)
+      const gd::String &parameterType_, const gd::String &objectName_,
+      const gd::String &layerName_, const gd::String &oldName_)
       : platform(platform_), globalObjectsContainer(globalObjectsContainer_),
         objectsContainer(objectsContainer_),
         expressionPlainString(expressionPlainString_),
-        parameterType(parameterType_), objectName(objectName_), layerName(layerName_),
-        oldName(oldName_){};
+        parameterType(parameterType_), objectName(objectName_),
+        layerName(layerName_), oldName(oldName_){};
   virtual ~ExpressionIdentifierStringFinder(){};
 
   const std::vector<gd::ExpressionParserLocation> GetOccurrences() const {
@@ -178,8 +178,8 @@ bool ProjectElementRenamer::DoVisitInstruction(gd::Instruction &instruction,
         if (node) {
           ExpressionIdentifierStringFinder finder(
               platform, GetGlobalObjectsContainer(), GetObjectsContainer(),
-              parameterValue.GetPlainString(), parameterType, objectName, layerName,
-              oldName);
+              parameterValue.GetPlainString(), parameterType, objectName,
+              layerName, oldName);
           node->Visit(finder);
 
           if (finder.GetOccurrences().size() > 0) {

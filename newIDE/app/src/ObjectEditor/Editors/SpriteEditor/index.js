@@ -580,6 +580,17 @@ export default function SpriteEditor({
             resourcesLoader={ResourcesLoader}
             project={project}
             onPointsUpdated={onObjectUpdated}
+            onRenamedPoint={(oldName, newName) =>
+              layout &&
+              object &&
+              gd.WholeProjectRefactorer.renameObjectPoint(
+                project,
+                layout,
+                object,
+                oldName,
+                newName
+              )
+            }
           />
         </Dialog>
       )}

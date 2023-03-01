@@ -24,6 +24,7 @@ type PointsListBodyProps = {|
   onPointsUpdated: () => void,
   onHoverPoint: (pointName: ?string) => void,
   onSelectPoint: (pointName: string) => void,
+  onRenamedPoint: (oldName: string, newName: string) => void,
   selectedPointName: ?string,
 |};
 
@@ -89,7 +90,9 @@ const PointsListBody = (props: PointsListBodyProps) => {
           if (pointsContainer.hasPoint(newName)) {
             success = false;
           } else {
+            const oldName = point.getName();
             point.setName(newName);
+            props.onRenamedPoint(oldName, newName);
             if (props.selectedPointName === pointName) {
               props.onSelectPoint(newName);
             }
@@ -171,6 +174,7 @@ type PointsListProps = {|
   onPointsUpdated: () => void,
   onHoverPoint: (pointName: ?string) => void,
   onSelectPoint: (pointName: ?string) => void,
+  onRenamedPoint: (oldName: string, newName: string) => void,
   selectedPointName: ?string,
 |};
 
@@ -198,6 +202,7 @@ const PointsList = (props: PointsListProps) => {
           onSelectPoint={props.onSelectPoint}
           selectedPointName={props.selectedPointName}
           onPointsUpdated={props.onPointsUpdated}
+          onRenamedPoint={props.onRenamedPoint}
         />
       </Table>
       <Spacer />

@@ -1,6 +1,7 @@
 // @flow
 
 import * as React from 'react';
+import { action } from '@storybook/addon-actions';
 
 // Keep first as it creates the `global.gd` object:
 import { testProject } from '../../GDevelopJsInitializerDecorator';
@@ -76,6 +77,7 @@ export const Points = () => (
           objectConfiguration={testProject.spriteObjectConfiguration}
           project={testProject.project}
           resourcesLoader={ResourcesLoader}
+          onRenamedPoint={action('Renamed a point')}
         />
       </FixedHeightFlexContainer>
     </DragAndDropContextProvider>
