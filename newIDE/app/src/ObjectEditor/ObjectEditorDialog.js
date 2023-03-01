@@ -290,6 +290,16 @@ const InnerDialog = (props: InnerDialogProps) => {
           project={props.project}
           resourceManagementProps={props.resourceManagementProps}
           effectsContainer={props.object.getEffects()}
+          onEffectsRenamed={(oldName, newName) =>
+            props.layout &&
+            gd.WholeProjectRefactorer.renameObjectEffect(
+              props.project,
+              props.layout,
+              props.object,
+              oldName,
+              newName
+            )
+          }
           onEffectsUpdated={() => {
             forceUpdate(); /*Force update to ensure dialog is properly positioned*/
             notifyOfChange();

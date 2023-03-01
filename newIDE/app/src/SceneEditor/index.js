@@ -1778,6 +1778,7 @@ export default class SceneEditor extends React.Component<Props, State> {
           <LayerEditorDialog
             project={project}
             resourceManagementProps={this.props.resourceManagementProps}
+            layout={layout}
             layer={this.state.editedLayer}
             initialInstances={initialInstances}
             initialTab={this.state.editedLayerInitialTab}

@@ -290,7 +290,7 @@ class AnimationsListContainer extends React.Component<
     animation.setName(newName);
     // TODO EBO Refactor event-based object events when an animation is renamed.
     if (layout && object) {
-      gd.WholeProjectRefactorer.renameAnimation(
+      gd.WholeProjectRefactorer.renameObjectAnimation(
         project,
         layout,
         object,

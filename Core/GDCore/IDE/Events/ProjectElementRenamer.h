@@ -33,13 +33,15 @@ public:
                         const gd::String &oldName_, const gd::String &newName_)
       : platform(platform_), parameterType(parameterType_), oldName(oldName_),
         newName(newName_){};
-  ProjectElementRenamer(const gd::Platform &platform_,
-                        const gd::String &parameterType_,
-                        const gd::String &objectName_,
-                        const gd::String &oldName_, const gd::String &newName_)
-      : platform(platform_), parameterType(parameterType_),
-        objectName(objectName_), oldName(oldName_), newName(newName_){};
   virtual ~ProjectElementRenamer();
+
+  void SetObjectConstraint(const gd::String &objectName_) {
+    objectName = objectName_;
+  }
+
+  void SetLayerConstraint(const gd::String &layerName_) {
+    layerName = layerName_;
+  }
 
 private:
   bool DoVisitInstruction(gd::Instruction &instruction,
@@ -49,7 +51,8 @@ private:
   const gd::String parameterType;
   /// If not empty, parameters will be taken into account only if related to
   /// this object.
-  const gd::String objectName;
+  gd::String objectName;
+  gd::String layerName;
   const gd::String oldName;
   const gd::String newName;
 };

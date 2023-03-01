@@ -36,12 +36,12 @@ public:
       const gd::ObjectsContainer &globalObjectsContainer_,
       const gd::ObjectsContainer &objectsContainer_,
       const gd::String &expressionPlainString_,
-      const gd::String &parameterType_, const gd::String &objectName_,
+      const gd::String &parameterType_, const gd::String &objectName_, const gd::String &layerName_,
       const gd::String &oldName_)
       : platform(platform_), globalObjectsContainer(globalObjectsContainer_),
         objectsContainer(objectsContainer_),
         expressionPlainString(expressionPlainString_),
-        parameterType(parameterType_), objectName(objectName_),
+        parameterType(parameterType_), objectName(objectName_), layerName(layerName_),
         oldName(oldName_){};
   virtual ~ExpressionIdentifierStringFinder(){};
 
@@ -96,6 +96,7 @@ protected:
       return;
     }
 
+    gd::String lastLayerName;
     size_t parameterIndex = 0;
     for (size_t metadataIndex = (isObjectFunction ? 1 : 0);
          metadataIndex < metadata.parameters.size() &&
@@ -108,6 +109,13 @@ protected:
       auto &parameterNode = node.parameters[parameterIndex];
       ++parameterIndex;
 
+      if (parameterMetadata.GetType() == "layer") {
+        // Remove quotes, it won't match if it's not a literal anyway.
+        lastLayerName = expressionPlainString.substr(
+            parameterNode->location.GetStartPosition() + 1,
+            parameterNode->location.GetEndPosition() -
+                parameterNode->location.GetStartPosition() - 2);
+      }
       if (parameterMetadata.GetType() == parameterType) {
         auto parameterExpressionPlainSting = expressionPlainString.substr(
             parameterNode->location.GetStartPosition(),
@@ -134,6 +142,7 @@ private:
   /// If not empty, parameters will be taken into account only if related to
   /// this object.
   const gd::String objectName;
+  const gd::String layerName;
   std::vector<gd::ExpressionParserLocation> occurrences;
 };
 
@@ -145,14 +154,21 @@ bool ProjectElementRenamer::DoVisitInstruction(gd::Instruction &instruction,
                              : gd::MetadataProvider::GetActionMetadata(
                                    platform, instruction.GetType());
 
+  gd::String lastLayerName;
   gd::ParameterMetadataTools::IterateOverParametersWithIndex(
       instruction.GetParameters(), metadata.GetParameters(),
       [&](const gd::ParameterMetadata &parameterMetadata,
           const gd::Expression &parameterValue, size_t parameterIndex,
           const gd::String &lastObjectName) {
+        if (parameterMetadata.GetType() == "layer") {
+          // Remove quotes, it won't match if it's not a literal anyway.
+          lastLayerName = parameterValue.GetPlainString().substr(
+              1, parameterValue.GetPlainString().length() - 2);
+        }
 
         if (parameterMetadata.GetType() == parameterType &&
-            (objectName.empty() || lastObjectName == objectName)) {
+            (objectName.empty() || lastObjectName == objectName) &&
+            (layerName.empty() || lastLayerName == layerName)) {
           if (parameterValue.GetPlainString() == "\"" + oldName + "\"") {
             instruction.SetParameter(parameterIndex,
                                      gd::Expression("\"" + newName + "\""));
@@ -162,7 +178,7 @@ bool ProjectElementRenamer::DoVisitInstruction(gd::Instruction &instruction,
         if (node) {
           ExpressionIdentifierStringFinder finder(
               platform, GetGlobalObjectsContainer(), GetObjectsContainer(),
-              parameterValue.GetPlainString(), parameterType, objectName,
+              parameterValue.GetPlainString(), parameterType, objectName, layerName,
               oldName);
           node->Visit(finder);
 

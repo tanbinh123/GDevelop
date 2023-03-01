@@ -3283,7 +3283,7 @@ CreateExpressionWithAnimationParameter(gd::Project &project,
 }
 } // namespace
 
-TEST_CASE("RenameAnimation", "[common]") {
+TEST_CASE("RenameObjectAnimation", "[common]") {
   SECTION("Can update object animation names in event") {
     gd::Project project;
     gd::Platform platform;
@@ -3323,8 +3323,8 @@ TEST_CASE("RenameAnimation", "[common]") {
     auto &wrongObjectExpression =
         CreateExpressionWithAnimationParameter(project, layout.GetEvents(), "MySprite2");
 
-    std::cout << "RenameAnimation" << std::endl;
-    gd::WholeProjectRefactorer::RenameAnimation(project, layout, object, "My animation",
+    std::cout << "RenameObjectAnimation" << std::endl;
+    gd::WholeProjectRefactorer::RenameObjectAnimation(project, layout, object, "My animation",
                                             "My renamed animation");
 
     REQUIRE(layoutAction.GetParameter(1).GetPlainString() ==

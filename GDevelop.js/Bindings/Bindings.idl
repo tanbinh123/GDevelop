@@ -2264,7 +2264,25 @@ interface WholeProjectRefactorer {
       [Ref] Layout layout,
       [Const] DOMString oldName,
       [Const] DOMString newName);
-    void STATIC_RenameAnimation(
+    void STATIC_RenameLayerEffect(
+      [Ref] Project project,
+      [Ref] Layout layout,
+      [Ref] Layer layer,
+      [Const] DOMString oldName,
+      [Const] DOMString newName);
+    void STATIC_RenameObjectAnimation(
+      [Ref] Project project,
+      [Ref] Layout layout,
+      [Ref] gdObject gdObject,
+      [Const] DOMString oldName,
+      [Const] DOMString newName);
+    void STATIC_RenameObjectPoint(
+      [Ref] Project project,
+      [Ref] Layout layout,
+      [Ref] gdObject gdObject,
+      [Const] DOMString oldName,
+      [Const] DOMString newName);
+    void STATIC_RenameObjectEffect(
       [Ref] Project project,
       [Ref] Layout layout,
       [Ref] gdObject gdObject,

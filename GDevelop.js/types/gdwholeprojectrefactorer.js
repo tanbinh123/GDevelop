@@ -17,7 +17,10 @@ declare class gdWholeProjectRefactorer {
   static renameExternalLayout(project: gdProject, oldName: string, newName: string): void;
   static renameExternalEvents(project: gdProject, oldName: string, newName: string): void;
   static renameLayer(project: gdProject, layout: gdLayout, oldName: string, newName: string): void;
-  static renameAnimation(project: gdProject, layout: gdLayout, gdObject: gdObject, oldName: string, newName: string): void;
+  static renameLayerEffect(project: gdProject, layout: gdLayout, layer: gdLayer, oldName: string, newName: string): void;
+  static renameObjectAnimation(project: gdProject, layout: gdLayout, gdObject: gdObject, oldName: string, newName: string): void;
+  static renameObjectPoint(project: gdProject, layout: gdLayout, gdObject: gdObject, oldName: string, newName: string): void;
+  static renameObjectEffect(project: gdProject, layout: gdLayout, gdObject: gdObject, oldName: string, newName: string): void;
   static objectOrGroupRenamedInLayout(project: gdProject, layout: gdLayout, oldName: string, newName: string, isObjectGroup: boolean): void;
   static objectOrGroupRemovedInLayout(project: gdProject, layout: gdLayout, objectName: string, isObjectGroup: boolean, removeEventsAndGroups: boolean): void;
   static objectOrGroupRenamedInEventsFunction(project: gdProject, eventsFunction: gdEventsFunction, globalObjectsContainer: gdObjectsContainer, objectsContainer: gdObjectsContainer, oldName: string, newName: string, isObjectGroup: boolean): void;
