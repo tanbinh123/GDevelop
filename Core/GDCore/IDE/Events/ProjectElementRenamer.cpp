@@ -122,6 +122,7 @@ protected:
             parameterNode->location.GetEndPosition() -
                 parameterNode->location.GetStartPosition());
         if (considerFunction &&
+            (layerName.empty() || lastLayerName == layerName) &&
             parameterExpressionPlainSting == "\"" + oldName + "\"") {
           occurrences.push_back(parameterNode->location);
         } else {

@@ -397,6 +397,7 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
                        .AddUnsupportedBaseObjectCapability("effect");
   }
 
+  // Actions and expressions with several parameter types.
   {
     extension
         ->AddAction("CreateObjectsFromExternalLayout",
@@ -429,6 +430,30 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
         .UseStandardParameters("number", gd::ParameterOptions::MakeNewOptions())
         .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
         .SetDefaultValue("\"\"");
+
+    extension
+        ->AddAction("EnableLayerEffect", _("Enable layer effect"),
+                    _("Enable an effect on a layer"),
+                    _("Enable effect _PARAM2_ on layer _PARAM1_: _PARAM3_"),
+                    _("Effects"), "", "")
+        .AddCodeOnlyParameter("currentScene", "")
+        .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
+        .SetDefaultValue("\"\"")
+        .AddParameter("layerEffectName", _("Effect name"))
+        .AddParameter("yesorno", _("Enable"), "", true);
+
+  extension
+      ->AddExpression(
+          "LayerEffectParameter",
+          _("Effect parameter (number)"),
+          _("Return the value of a parameter of an effect."),
+          _("Effects"),
+          "")
+      .AddCodeOnlyParameter("currentScene", "")
+      .AddParameter("layer", _("Layer (base layer if empty)"), "", true)
+      .SetDefaultValue("\"\"")
+      .AddParameter("layerEffectName", _("Effect name"))
+      .AddParameter("layerEffectParameterName", _("Parameter name"));
   }
 
   platform.AddExtension(commonInstructionsExtension);

@@ -3323,7 +3323,6 @@ TEST_CASE("RenameObjectAnimation", "[common]") {
     auto &wrongObjectExpression =
         CreateExpressionWithAnimationParameter(project, layout.GetEvents(), "MySprite2");
 
-    std::cout << "RenameObjectAnimation" << std::endl;
     gd::WholeProjectRefactorer::RenameObjectAnimation(project, layout, object, "My animation",
                                             "My renamed animation");
 
@@ -3355,5 +3354,114 @@ TEST_CASE("RenameObjectAnimation", "[common]") {
     REQUIRE(wrongObjectExpression.GetParameter(0).GetPlainString() ==
             "MySprite2.AnimationFrameCount(\"My animation\") + "
             "MySprite2.AnimationFrameCount(\"My animation\")");
+  }
+}
+
+namespace {
+const gd::Instruction &CreateActionWithLayerEffectParameter(gd::Project &project,
+                                                      gd::EventsList &events,
+                                                      const gd::String &layerName) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::EnableLayerEffect");
+  action.SetParametersCount(3);
+  action.SetParameter(1, gd::Expression("\"" + layerName + "\""));
+  action.SetParameter(2, gd::Expression("\"My effect\""));
+  return event.GetActions().Insert(action);
+}
+
+const gd::Instruction &
+CreateExpressionWithLayerEffectParameter(gd::Project &project,
+                                   gd::EventsList &events,
+                                   const gd::String &layerName) {
+  gd::StandardEvent &event = dynamic_cast<gd::StandardEvent &>(
+      events.InsertNewEvent(project, "BuiltinCommonInstructions::Standard"));
+
+  gd::Instruction action;
+  action.SetType("MyExtension::DoSomething");
+  action.SetParametersCount(1);
+  action.SetParameter(
+      0, gd::Expression("MyExtension::LayerEffectParameter(\"" + layerName + "\", \"My effect\") + "
+                        "MyExtension::LayerEffectParameter(\"" + layerName + "\", \"My effect\")"));
+  return event.GetActions().Insert(action);
+}
+} // namespace
+
+TEST_CASE("RenameLayerEffect", "[common]") {
+  SECTION("Can update layer effect names in event") {
+    gd::Project project;
+    gd::Platform platform;
+    SetupProjectWithDummyPlatform(project, platform);
+
+    auto &layout = project.InsertNewLayout("My layout", 0);
+    layout.InsertNewLayer("My layer", 0);
+    auto &layer = layout.GetLayer("My layer");
+    auto &otherLayout = project.InsertNewLayout("My other layout", 1);
+    auto &externalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    externalEvents.SetAssociatedLayout("My layout");
+    auto &otherExternalEvents =
+        project.InsertNewExternalEvents("My external events", 0);
+    otherExternalEvents.SetAssociatedLayout("My other layout");
+    auto &object = layout.InsertNewObject(project, "MyExtension::Sprite", "MySprite", 0);
+    layout.InsertNewObject(project, "MyExtension::Sprite", "MySprite2", 1);
+    otherLayout.InsertNewObject(project, "MyExtension::Sprite", "MySprite", 0);
+
+    auto &layoutAction =
+        CreateActionWithLayerEffectParameter(project, layout.GetEvents(), "My layer");
+    auto &externalAction =
+        CreateActionWithLayerEffectParameter(project, externalEvents.GetEvents(), "My layer");
+    auto &otherLayoutAction =
+        CreateActionWithLayerEffectParameter(project, otherLayout.GetEvents(), "My layer");
+    auto &otherExternalAction = CreateActionWithLayerEffectParameter(
+        project, otherExternalEvents.GetEvents(), "My layer");
+    auto &wrongLayerAction =
+        CreateActionWithLayerEffectParameter(project, layout.GetEvents(), "My layer 2");
+
+    auto &layoutExpression =
+        CreateExpressionWithLayerEffectParameter(project, layout.GetEvents(), "My layer");
+    auto &externalExpression =
+        CreateExpressionWithLayerEffectParameter(project, externalEvents.GetEvents(), "My layer");
+    auto &otherLayoutExpression =
+        CreateExpressionWithLayerEffectParameter(project, otherLayout.GetEvents(), "My layer");
+    auto &otherExternalExpression = CreateExpressionWithLayerEffectParameter(
+        project, otherExternalEvents.GetEvents(), "My layer");
+    auto &wrongLayerExpression =
+        CreateExpressionWithLayerEffectParameter(project, layout.GetEvents(), "My layer 2");
+
+    std::cout << "RenameLayerEffect" << std::endl;
+    gd::WholeProjectRefactorer::RenameLayerEffect(project, layout, layer, "My effect",
+                                            "My renamed effect");
+
+    REQUIRE(layoutAction.GetParameter(2).GetPlainString() ==
+            "\"My renamed effect\"");
+    REQUIRE(externalAction.GetParameter(2).GetPlainString() ==
+            "\"My renamed effect\"");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutAction.GetParameter(2).GetPlainString() ==
+            "\"My effect\"");
+    REQUIRE(otherExternalAction.GetParameter(2).GetPlainString() ==
+            "\"My effect\"");
+    REQUIRE(wrongLayerAction.GetParameter(2).GetPlainString() ==
+            "\"My effect\"");
+
+    REQUIRE(layoutExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My renamed effect\") + "
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My renamed effect\")");
+    REQUIRE(externalExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My renamed effect\") + "
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My renamed effect\")");
+    // The event from the other layout are untouched.
+    REQUIRE(otherLayoutExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My effect\") + "
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My effect\")");
+    REQUIRE(otherExternalExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My effect\") + "
+            "MyExtension::LayerEffectParameter(\"My layer\", \"My effect\")");
+    REQUIRE(wrongLayerExpression.GetParameter(0).GetPlainString() ==
+            "MyExtension::LayerEffectParameter(\"My layer 2\", \"My effect\") + "
+            "MyExtension::LayerEffectParameter(\"My layer 2\", \"My effect\")");
   }
 }
