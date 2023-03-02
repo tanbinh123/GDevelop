@@ -283,6 +283,7 @@ void SetupProjectWithDummyPlatform(gd::Project& project,
       .AddParameter("objectPtr", _("Object parameter"))
       .SetFunctionName("getObjectStringWith2ObjectParam");
 
+  // Actions and expressions with several parameter types.
   object
       .AddAction("SetAnimationName", _("Change the animation (by name)"),
                  _("Change the animation of the object, using the name of the "

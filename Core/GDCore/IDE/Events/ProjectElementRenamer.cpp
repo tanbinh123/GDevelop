@@ -143,6 +143,8 @@ private:
   /// If not empty, parameters will be taken into account only if related to
   /// this object.
   const gd::String objectName;
+  /// If not empty, parameters will be taken into account only if related to
+  /// this layer.
   const gd::String layerName;
   std::vector<gd::ExpressionParserLocation> occurrences;
 };

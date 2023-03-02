@@ -281,7 +281,7 @@ class GD_CORE_API WholeProjectRefactorer {
                                    const gd::String &oldName,
                                    const gd::String &newName);
   /**
-   * \brief Refactor the project after an external layout is renamed.
+   * \brief Refactor the project after external events are renamed.
    */
   static void RenameExternalEvents(gd::Project &project,
                                    const gd::String &oldName,

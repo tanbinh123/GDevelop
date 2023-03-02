@@ -20,8 +20,9 @@ class EventsList;
 namespace gd {
 
 /**
- * \brief Replace in expressions and in parameters of actions or conditions,
- * references to the name of layout or an external layout.
+ * \brief Replace in expressions and in parameters of actions or conditions
+ * occurrences of project element name. For instance, it can be layouts or
+ * object effects.
  *
  * \ingroup IDE
  */
@@ -52,6 +53,8 @@ private:
   /// If not empty, parameters will be taken into account only if related to
   /// this object.
   gd::String objectName;
+  /// If not empty, parameters will be taken into account only if related to
+  /// this layer.
   gd::String layerName;
   const gd::String oldName;
   const gd::String newName;

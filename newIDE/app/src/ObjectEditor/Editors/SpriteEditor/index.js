@@ -581,6 +581,7 @@ export default function SpriteEditor({
             project={project}
             onPointsUpdated={onObjectUpdated}
             onRenamedPoint={(oldName, newName) =>
+              // TODO EBO Refactor event-based object events when a point is renamed.
               layout &&
               object &&
               gd.WholeProjectRefactorer.renameObjectPoint(

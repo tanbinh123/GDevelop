@@ -291,6 +291,7 @@ const InnerDialog = (props: InnerDialogProps) => {
           resourceManagementProps={props.resourceManagementProps}
           effectsContainer={props.object.getEffects()}
           onEffectsRenamed={(oldName, newName) =>
+            // TODO EBO Refactor event-based object events when an effect is renamed.
             props.layout &&
             gd.WholeProjectRefactorer.renameObjectEffect(
               props.project,
